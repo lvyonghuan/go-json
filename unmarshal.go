@@ -217,9 +217,10 @@ func handelObject(v string, index *int) (objectMap, error) {
 // 检测到"时，按照字符串逻辑处理
 func handelStr(v string, index *int) string {
 	var str string
-	for ; v[*index] != '"'; *index++ {
+	for *index += 1; v[*index] != '"'; *index++ {
 		str += string(v[*index])
 	}
+	*index += 2
 	return str
 }
 

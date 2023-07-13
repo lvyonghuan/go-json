@@ -32,6 +32,15 @@ func Unmarshal(v []byte, s any) error {
 		s = val[1 : len(val)-1]
 		return nil
 	}
+	//当JSON字符串为数字类型的时候
+	if temp, err := strconv.Atoi(val); err == nil {
+		s = temp
+		return nil
+	}
+	if temp, err := strconv.ParseFloat(val, 64); err == nil {
+		s = temp
+		return nil
+	}
 	//当JSON字符串为数组或object时，进行进一步处理
 	return handelInterfaceInUnmarshal(val, s)
 }

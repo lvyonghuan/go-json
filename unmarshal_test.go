@@ -32,3 +32,41 @@ func TestUnmarshal(t *testing.T) {
 		t.Errorf("Unmarshaled data does not match expected data")
 	}
 }
+
+func TestUnmarshal1(t *testing.T) {
+	type args struct {
+		v []byte
+		s any
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "String JSON",
+			args: args{
+				v: []byte(`"Hello, World!"`),
+				s: new(string),
+			},
+			wantErr: false,
+		},
+		//{
+		//	name: "Boolean JSON",
+		//	args: args{
+		//		v: []byte(`true`),
+		//		s: new(bool),
+		//	},
+		//	wantErr: false,
+		//},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := Unmarshal(tt.args.v, tt.args.s); (err != nil) != tt.wantErr {
+
+				t.Errorf("Unmarshal() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

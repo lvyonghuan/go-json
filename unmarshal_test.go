@@ -28,6 +28,7 @@ func TestUnmarshal(t *testing.T) {
 	}
 	// 对比结果
 	if result.Name != data.Name || result.Age != data.Age {
+		log.Println(result)
 		t.Errorf("Unmarshaled data does not match expected data")
 	}
 }

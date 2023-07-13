@@ -2,7 +2,6 @@ package json
 
 import (
 	"errors"
-	"log"
 	"reflect"
 	"strconv"
 )
@@ -65,16 +64,15 @@ func handelInterfaceInUnmarshal(v string, s any) error {
 		if err != nil {
 			return err
 		}
+		handel = objMap
 		val := reflect.TypeOf(s).Elem()
 		if val.Kind() != reflect.Struct {
-			log.Println(val)
 			return errors.New("无法解析的结构体类型")
 		}
 		s, err = madeObject(handel, val)
 		if err != nil {
 			return err
 		}
-		handel = objMap
 		return nil
 	} else {
 		return errors.New("预处理逻辑的问题")
@@ -377,7 +375,7 @@ func checkType(sign string) int {
 // 制造切片
 func madeSlice(v interface{}, s reflect.Value) (interface{}, error) {
 	newSlice := reflect.MakeSlice(s.Type(), 0, 0)
-	tempMap, ok := v.(map[int]interface{})
+	tempMap, ok := v.(arrayMap)
 	if !ok {
 		return nil, errors.New("不是切片类型")
 	}
@@ -428,7 +426,7 @@ func madeSlice(v interface{}, s reflect.Value) (interface{}, error) {
 // 制造结构体
 func madeObject(v interface{}, s reflect.Type) (interface{}, error) {
 	newStruct := reflect.New(s).Elem()
-	tempMap := v.(map[string]map[int]interface{})
+	tempMap := v.(objectMap)
 	for i := 0; i < s.NumField(); i++ {
 		field := s.Field(i)
 		//根据tag取值

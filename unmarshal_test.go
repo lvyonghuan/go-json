@@ -6,6 +6,36 @@ import (
 	"testing"
 )
 
+// 数组测试
+func TestUnmarshal2(t *testing.T) {
+	type args struct {
+		v []byte
+		s any
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "Array JSON",
+			args: args{
+				v: []byte("[1, 2, 3, 4, 5]"),
+				s: new([]int),
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := Unmarshal(tt.args.v, tt.args.s); (err != nil) != tt.wantErr {
+				t.Errorf("Unmarshal() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
 func TestUnmarshal(t *testing.T) {
 	type TestData struct {
 		Name string `json:"name"`

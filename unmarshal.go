@@ -109,6 +109,9 @@ func handelArray(v string, index *int) (arrayMap, error) {
 			var isFloat = false
 			//进行一个for循环，拼接字符串
 			for j := index; v[*j] != ',' && v[*j] != ']'; *j++ {
+				if string(v[*j]) == " " { //跳过空格
+					continue
+				}
 				TempStr += string(v[*j])
 				if v[*j] == '.' {
 					isFloat = true

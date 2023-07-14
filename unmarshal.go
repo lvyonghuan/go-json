@@ -2,6 +2,7 @@ package json
 
 import (
 	"errors"
+	"log"
 	"reflect"
 	"strconv"
 )
@@ -78,7 +79,10 @@ func handelInterfaceInUnmarshal(v string, s any) error {
 		if val.Kind() != reflect.Struct {
 			return errors.New("无法解析的结构体类型")
 		}
-		s, err = madeObject(handel, val)
+		temp, err := madeObject(handel, val)
+		value := reflect.ValueOf(s).Elem()
+		value.Set(reflect.ValueOf(temp))
+		log.Println(s)
 		if err != nil {
 			return err
 		}

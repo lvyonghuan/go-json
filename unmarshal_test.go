@@ -157,10 +157,9 @@ func TestUnmarshal3(t *testing.T) {
 	`
 	var data []Person
 
-	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
+	if err := Unmarshal([]byte(jsonStr), &data); err != nil {
 		t.Errorf("Failed to unmarshal JSON: %v", err)
 	}
-
 	// 对每个 Person 对象进行断言验证
 	// 这里使用 reflect.DeepEqual 进行对象的深度比较
 	// 你也可以根据具体的测试需求编写自定义的断言逻辑

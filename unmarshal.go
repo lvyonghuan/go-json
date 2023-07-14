@@ -50,7 +50,16 @@ func Unmarshal(v []byte, s any) error {
 
 func handelInterfaceInUnmarshal(v string, s any) error {
 	//定基调，整个结构是数组还是对象
-	var first = string(v[0])
+	var first string
+	for i := 0; i < len(v); i++ {
+		temp := string(v[i])
+		if temp == " " || temp == "\n" || temp == "\r" || temp == "\t" {
+			continue
+		} else {
+			first = temp
+			break
+		}
+	}
 	typ := checkType(first)
 	var index int
 	var handel interface{}
@@ -96,6 +105,7 @@ func handelInterfaceInUnmarshal(v string, s any) error {
 func handelArray(v string, index *int) (arrayMap, error) {
 	var arrayM = make(arrayMap)
 	for ; v[*index] != ']'; *index++ {
+		skip(v, index)
 		typ := checkType(string(v[*index]))
 		switch typ {
 		case str:
@@ -113,9 +123,10 @@ func handelArray(v string, index *int) (arrayMap, error) {
 			var isFloat = false
 			//进行一个for循环，拼接字符串
 			for j := index; v[*j] != ',' && v[*j] != ']'; *j++ {
-				if string(v[*j]) == " " { //跳过空格
-					continue
-				}
+				//if string(v[*j]) == " " { //跳过空格
+				//	continue
+				//}
+				skip(v, j)
 				TempStr += string(v[*j])
 				if v[*j] == '.' {
 					isFloat = true
@@ -154,6 +165,7 @@ func handelArray(v string, index *int) (arrayMap, error) {
 func handelObject(v string, index *int) (objectMap, error) {
 	var objMap = make(objectMap)
 	for *index += 2; v[*index] != '}'; *index++ {
+		skip(v, index)
 		//提取字符串中的tag
 		var tag string //存储tag，作为objectMap的key
 		for i := index; string(v[*i]) != "\""; *i++ {
@@ -231,6 +243,18 @@ func handelStr(v string, index *int) string {
 	return str
 }
 
+// 跳过空格，换行符和tab
+func skip(v string, i *int) {
+	for ; *i < len(v); *i++ {
+		temp := string(v[*i])
+		if temp == " " || temp == "\n" || temp == "\r" || temp == "\t" {
+			continue
+		} else {
+			break
+		}
+	}
+}
+
 // 将数据映射到传入结构上
 
 // 处理字符串类型
@@ -268,92 +292,6 @@ func getFloat64(v interface{}) (float64, error) {
 	}
 	return tempFloat, nil
 }
-
-//大概是多此一举的东西，暂时保留
-//// 处理切片类型
-//func getArray(v interface{}) ([]interface{}, error) {
-//	////设定计数器，确认切片的类型。如果切片类型可以被唯一确定，那么就设置切片的元素。否则将其设置为空接口切片。
-//	//var (
-//	//	count=0//统计是否只有一个确定的true
-//	//	sliceType int
-//	//)
-//	val, ok := v.(map[int]interface{})
-//	if !ok {
-//		return nil, errors.New("无法解析的切片类型")
-//	}
-//	var tempSlice []interface{}
-//	for key, value := range val {
-//		switch key {
-//		case str:
-//			tempStr, err := getStr(value)
-//			if err != nil {
-//				return nil, err
-//			}
-//			tempSlice = append(tempSlice, tempStr)
-//			//count+=1
-//			//sliceType=str
-//		case boolean:
-//			tempBool, err := getBool(v)
-//			if err != nil {
-//				return nil, err
-//			}
-//			tempSlice = append(tempSlice, tempBool)
-//			//count+=1
-//			//sliceType=boolean
-//		case numberFloat:
-//			tempFloat, err := getFloat64(v)
-//			if err != nil {
-//				return nil, err
-//			}
-//			tempSlice = append(tempSlice, tempFloat)
-//			//count+=1
-//			//sliceType=numberFloat
-//		case numberInt:
-//			tempInt, err := getInt(v)
-//			if err != nil {
-//				return nil, err
-//			}
-//			tempSlice = append(tempSlice, tempInt)
-//			//count+=1
-//			//sliceType=numberInt
-//		case array:
-//			tempArray, err := getArray(v)
-//			if err != nil {
-//				return nil, err
-//			}
-//			tempSlice = append(tempSlice, tempArray)
-//			//count+=1
-//			//sliceType=array
-//		case object:
-//			tempObj, err := getObject(v)
-//			if err != nil {
-//				return nil, err
-//			}
-//			tempSlice = append(tempSlice, tempObj)
-//			//count+=1
-//			//sliceType=object
-//		}
-//	}
-//	//if ==1{
-//	//	switch  sliceType{
-//	//	case str:
-//	//		return tempSlice
-//	//	}
-//	//}else{
-//	//	return tempSlice,nil
-//	//}
-//	return tempSlice, nil
-//}
-//
-//// 处理结构体类型
-//func getObject(v interface{}) (interface{}, error) {
-//	val, ok := v.(map[string]map[int]interface{})
-//	if !ok {
-//		return nil, errors.New("无法解析的结构体")
-//	}
-//	for tag, tagMap := range val {
-//	}
-//}
 
 //分割字符串，定位JSON类型
 

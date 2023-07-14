@@ -104,6 +104,14 @@ func handelInterfaceInUnmarshal(v string, s any) error {
 // 检测到"["时，按照数组逻辑进行处理
 func handelArray(v string, index *int) (arrayMap, error) {
 	var arrayM = make(arrayMap)
+	for ; string(v[*index]) != "["; *index++ {
+		temp := string(v[*index])
+		if temp == " " || temp == "\n" || temp == "\r" || temp == "\t" {
+			continue
+		} else {
+			break
+		}
+	}
 	for ; v[*index] != ']'; *index++ {
 		skip(v, index)
 		typ := checkType(string(v[*index]))
@@ -123,9 +131,6 @@ func handelArray(v string, index *int) (arrayMap, error) {
 			var isFloat = false
 			//进行一个for循环，拼接字符串
 			for j := index; v[*j] != ',' && v[*j] != ']'; *j++ {
-				//if string(v[*j]) == " " { //跳过空格
-				//	continue
-				//}
 				skip(v, j)
 				TempStr += string(v[*j])
 				if v[*j] == '.' {
@@ -164,7 +169,10 @@ func handelArray(v string, index *int) (arrayMap, error) {
 // 检测到"{"时，按照结构体逻辑进行处理
 func handelObject(v string, index *int) (objectMap, error) {
 	var objMap = make(objectMap)
-	for *index += 2; v[*index] != '}'; *index++ {
+	//跳过某些特殊符号
+	for ; string(v[*index]) != "\""; *index++ {
+	}
+	for ; v[*index] != '}'; *index++ {
 		skip(v, index)
 		//提取字符串中的tag
 		var tag string //存储tag，作为objectMap的key
@@ -191,6 +199,7 @@ func handelObject(v string, index *int) (objectMap, error) {
 			var isFloat = false
 			//进行一个for循环，拼接字符串
 			for j := index; v[*j] != ',' && v[*j] != '}'; *j++ {
+				skip(v, j)
 				TempStr += string(v[*j])
 				if v[*j] == '.' {
 					isFloat = true
